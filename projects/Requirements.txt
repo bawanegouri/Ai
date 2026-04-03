@@ -1,1 +1,7 @@
 
+# Libraries that the project uses, like:
+tkinter
+flask
+opencv-python
+pillow
+# etc.
