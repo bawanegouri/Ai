@@ -1,0 +1,42 @@
+def magic_square_odd(n):
+    """Generate magic square for odd n"""
+    if n % 2 == 0:
+        return None
+    
+    magic = [[0] * n for _ in range(n)]
+    i, j = 0, n // 2
+    
+    for num in range(1, n * n + 1):
+        magic[i][j] = num
+        i -= 1
+        j += 1
+        
+        if num % n == 0:
+            i += 2
+            j -= 1
+        elif i < 0:
+            i = n - 1
+        elif j == n:
+            j = 0
+    
+    return magic
+
+def print_magic_square(magic):
+    """Print magic square beautifully"""
+    if not magic:
+        print("Invalid input")
+        return
+    
+    n = len(magic)
+    print(f"\nMagic Square ({n}x{n}):")
+    for row in magic:
+        print(" ".join(f"{num:3d}" for num in row))
+    
+    # Verify magic constant
+    magic_const = n * (n * n + 1) // 2
+    print(f"\nMagic Constant: {magic_const}")
+
+# Example usage
+n = 3  # Change for any odd number (3, 5, 7, ...)
+magic = magic_square_odd(n)
+print_magic_square(magic)

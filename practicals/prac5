@@ -1,0 +1,39 @@
+from itertools import permutations
+
+def solve_cryptarithmetic(puzzle):
+    # Parse puzzle: "SEND+MORE=MONEY"
+    left, right = puzzle.replace(" ", "").split("=")
+    words = left.split("+")
+    result = right
+    
+    # Get unique letters
+    letters = set("".join(words) + result)
+    letters = list(letters)
+    
+    # Identify first letters (can't be zero)
+    first_chars = {word[0] for word in words + [result]}
+    
+    # Try all digit permutations
+    for perm in permutations(range(10), len(letters)):
+        assignment = dict(zip(letters, perm))
+        
+        # Check first letters not zero
+        if any(assignment[ch] == 0 for ch in first_chars):
+            continue
+        
+        # Convert words to numbers
+        def word_to_num(word):
+            return int("".join(str(assignment[ch]) for ch in word))
+        
+        if sum(word_to_num(w) for w in words) == word_to_num(result):
+            return assignment
+    
+    return None
+
+# Example
+puzzle = "SEND + MORE = MONEY"
+solution = solve_cryptarithmetic(puzzle)
+if solution:
+    print("Solution found:")
+    for letter, digit in sorted(solution.items()):
+        print(f"{letter} = {digit}")

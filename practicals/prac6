@@ -1,0 +1,83 @@
+import time
+import math
+
+class Game:
+    def __init__(self):
+        self.board = [' ']*9
+    
+    def get_moves(self):
+        return [i for i in range(9) if self.board[i] == ' ']
+    
+    def evaluate(self):
+        wins = [(0,1,2), (3,4,5), (6,7,8), (0,3,6), (1,4,7), (2,5,8), (0,4,8), (2,4,6)]
+        for a,b,c in wins:
+            if self.board[a] == self.board[b] == self.board[c] != ' ':
+                return 1 if self.board[a] == 'X' else -1
+        return 0
+    
+    def is_over(self):
+        return self.evaluate() != 0 or ' ' not in self.board
+    
+    def minimax(self, depth, is_max):
+        if self.is_over() or depth == 0:
+            return self.evaluate()
+        
+        if is_max:
+            best = -math.inf
+            for m in self.get_moves():
+                self.board[m] = 'X'
+                best = max(best, self.minimax(depth-1, False))
+                self.board[m] = ' '
+            return best
+        else:
+            best = math.inf
+            for m in self.get_moves():
+                self.board[m] = 'O'
+                best = min(best, self.minimax(depth-1, True))
+                self.board[m] = ' '
+            return best
+    
+    def alphabeta(self, depth, alpha, beta, is_max):
+        if self.is_over() or depth == 0:
+            return self.evaluate()
+        
+        if is_max:
+            best = -math.inf
+            for m in self.get_moves():
+                self.board[m] = 'X'
+                best = max(best, self.alphabeta(depth-1, alpha, beta, False))
+                self.board[m] = ' '
+                alpha = max(alpha, best)
+                if beta <= alpha:
+                    break
+            return best
+        else:
+            best = math.inf
+            for m in self.get_moves():
+                self.board[m] = 'O'
+                best = min(best, self.alphabeta(depth-1, alpha, beta, True))
+                self.board[m] = ' '
+                beta = min(beta, best)
+                if beta <= alpha:
+                    break
+            return best
+
+# Compare performance
+def compare_algorithms():
+    game = Game()
+    
+    # Minimax
+    start = time.time()
+    minimax_result = game.minimax(6, True)
+    minimax_time = time.time() - start
+    
+    # Alpha-Beta
+    start = time.time()
+    alphabeta_result = game.alphabeta(6, -math.inf, math.inf, True)
+    alphabeta_time = time.time() - start
+    
+    print(f"Minimax: {minimax_time*1000:.3f}ms, Result: {minimax_result}")
+    print(f"Alpha-Beta: {alphabeta_time*1000:.3f}ms, Result: {alphabeta_result}")
+    print(f"Speedup: {minimax_time/alphabeta_time:.2f}x faster")
+
+compare_algorithms()

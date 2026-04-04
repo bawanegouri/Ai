@@ -1,0 +1,80 @@
+import heapq
+from collections import deque
+import time
+
+# Graph definition
+graph = {
+    'A': [('B', 4), ('C', 2)],
+    'B': [('C', 1), ('D', 5)],
+    'C': [('D', 8), ('E', 10)],
+    'D': [('E', 2), ('F', 6)],
+    'E': [('F', 3), ('G', 5)],
+    'F': [('G', 1), ('H', 7)],
+    'G': [('H', 2), ('I', 4)],
+    'H': [('I', 3)],
+    'I': []
+}
+
+# Heuristic (straight-line distance to 'I')
+heuristic = {'A': 14, 'B': 12, 'C': 11, 'D': 8, 'E': 6, 'F': 4, 'G': 3, 'H': 2, 'I': 0}
+
+# A* Implementation
+def a_star(graph, start, goal, h):
+    open_set = [(h[start], start, [start], 0)]
+    visited = set()
+    
+    while open_set:
+        f, curr, path, g = heapq.heappop(open_set)
+        if curr in visited: continue
+        visited.add(curr)
+        
+        if curr == goal: return path, g, len(visited)
+        
+        for neighbor, cost in graph.get(curr, []):
+            if neighbor not in visited:
+                heapq.heappush(open_set, (g + cost + h[neighbor], neighbor, path + [neighbor], g + cost))
+    return None, None, len(visited)
+
+# BFS Implementation
+def bfs(graph, start, goal):
+    queue = deque([(start, [start], 0)])
+    visited = set([start])
+    
+    while queue:
+        curr, path, cost = queue.popleft()
+        if curr == goal: return path, cost, len(visited)
+        
+        for neighbor, edge_cost in graph.get(curr, []):
+            if neighbor not in visited:
+                visited.add(neighbor)
+                queue.append((neighbor, path + [neighbor], cost + edge_cost))
+    return None, None, len(visited)
+
+# Compare
+print("="*50)
+print("A* ALGORITHM")
+print("="*50)
+start_time = time.time()
+path, cost, explored = a_star(graph, 'A', 'I', heuristic)
+astar_time = time.time() - start_time
+print(f"Path: {' → '.join(path)}")
+print(f"Cost: {cost}")
+print(f"Nodes explored: {explored}")
+print(f"Time: {astar_time*1000:.4f} ms")
+
+print("\n" + "="*50)
+print("BFS ALGORITHM")
+print("="*50)
+start_time = time.time()
+path, cost, explored = bfs(graph, 'A', 'I')
+bfs_time = time.time() - start_time
+print(f"Path: {' → '.join(path)}")
+print(f"Cost: {cost}")
+print(f"Nodes explored: {explored}")
+print(f"Time: {bfs_time*1000:.4f} ms")
+
+print("\n" + "="*50)
+print("COMPARISON")
+print("="*50)
+print(f"Time difference: A* is {(bfs_time/astar_time):.2f}x faster")
+print(f"Nodes difference: A* explored {(explored - len(set()))} fewer nodes")

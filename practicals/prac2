@@ -1,0 +1,38 @@
+from collections import deque
+
+def water_jug(jug1, jug2, target):
+    # jug1, jug2: capacities, target: target amount
+    visited = set()
+    queue = deque([(0, 0, [])])  # (jug1, jug2, path)
+    
+    while queue:
+        a, b, path = queue.popleft()
+        
+        if a == target or b == target:
+            return path + [(a, b)]
+        
+        if (a, b) in visited:
+            continue
+        visited.add((a, b))
+        
+        # Possible moves
+        moves = [
+            (jug1, b, "Fill jug1"),           # Fill jug1
+            (a, jug2, "Fill jug2"),           # Fill jug2
+            (0, b, "Empty jug1"),             # Empty jug1
+            (a, 0, "Empty jug2"),             # Empty jug2
+            (max(0, a - (jug2 - b)), min(jug2, a + b), "Pour jug1->jug2"),
+            (min(jug1, a + b), max(0, b - (jug1 - a)), "Pour jug2->jug1")
+        ]
+        
+        for na, nb, action in moves:
+            if (na, nb) not in visited:
+                queue.append((na, nb, path + [(a, b, action)]))
+    
+    return None
+
+# Example
+result = water_jug(4, 3, 2)
+print("Solution steps:")
+for step in result:
+    print(step)
