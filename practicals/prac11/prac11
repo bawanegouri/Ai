@@ -1,0 +1,61 @@
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.linear_model import LinearRegression
+
+# Step 1: Define dataset input directly as lists
+# You can easily add more data points by extending these lists.
+# Example: hours = [1, 2, 3, 4, 5, 6], marks = [10, 20, 30, 40, 50, 60]
+hours = [
+    1, 2, 3, 4, 5,
+    2.5, 3.5, 4.5, 5.5, 6.5,
+    1.5, 2.2, 3.8, 4.1, 5.9, 6.1,
+    0.5, 1.2, 2.8, 3.2, 4.8, 5.2,
+    6.0, 0.8, 1.8, 2.6, 3.4, 4.2,
+    5.1, 6.3, 1.1, 2.3, 3.7, 4.3,
+    5.6, 6.4
+]
+marks = [
+    10, 20, 30, 40, 50,
+    25, 38, 47, 58, 67,
+    15, 22, 39, 42, 60, 62,
+    5, 12, 28, 32, 48, 52,
+    61, 8, 18, 26, 34, 43,
+    51, 63, 11, 23, 37, 43,
+    56, 64
+]
+
+# Step 2: Create DataFrame
+df = pd.DataFrame({
+    'Hours': hours,
+    'Marks': marks
+})
+
+# Step 3: Define X and y
+X = df[['Hours']]
+y = df['Marks']
+
+# Step 4: Train model
+model = LinearRegression()
+model.fit(X, y)
+
+# Step 5: Predict using user input
+# You can still enter new hours to predict marks interactively
+new_hours = float(input("Enter study hours to predict marks: "))
+prediction = model.predict([[new_hours]])
+
+print("\nSlope (m):", model.coef_[0])
+print("Intercept (b):", model.intercept_)
+print(f"Predicted Marks for {new_hours} hours:", prediction[0])
+
+# Step 6: Plot graph
+predicted = model.predict(X)
+
+plt.scatter(X, y, label="Actual Data")
+plt.plot(X, predicted, label="Regression Line", color='red')
+plt.xlabel("Study Hours")
+plt.ylabel("Marks")
+plt.title("Linear Regression with User Input")
+plt.legend()
+plt.grid(True)
+plt.show()
